@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Connect Four</title>
+  <script src="./js/require.min.js"></script>
+  <style>
+    body {
+      padding: 0 0;
+      margin: 0 0;
+      display: flex;
+      flex-direction: row
+    }
+
+    .col {
+      background: gray;
+      flex: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .col:hover {
+      background: darkgray;
+    }
+
+    .row {
+      background: ghostwhite;
+      height: 50px;
+      width: 50px;
+      border: 1px solid black;
+      border-radius: 25px;
+      margin: 4px;
+    }
+
+    .row.player {
+      background: gold;
+    }
+
+    .row.opponent {
+      background: red;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="col">
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+  </div>
+  <div class="col">
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+  </div>
+  <div class="col">
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+  </div>
+  <div class="col">
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+  </div>
+  <div class="col">
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+  </div>
+  <div class="col">
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+  </div>
+  <div class="col">
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+  </div>
+  <script>
+    requirejs(["bin/game"], function (game) {
+      console.log(game);
+      const newGame = new game.Game();
+      console.log(newGame.getData());
+
+      function updateView(data) {
+        const columns = document.body.querySelectorAll('.col');
+        
+        for (let x = 0; x < data.length; x++) {
+          const colData = data[x];
+          const col = columns.item(x);
+          for(let y = 0; y < colData.length; y++) {
+            const player = colData[y];
+            col.children.item(colData.length - y - 1).className = 'row' + (player === 0 ? '' : player === 1 ? ' player' : ' opponent')
+          }
+        }
+      }
+
+      const cols = document.body.querySelectorAll('.col');
+      
+      let waiting = false;
+
+      for(let i = 0; i < cols.length; i++) {
+        cols[i].addEventListener('click', () => {
+          if (newGame.hasEnded() || waiting) return;
+          newGame.move(i + 1);
+          waiting = true;
+          updateView(newGame.getData());
+          newGame.moveOpponent().then(() => {
+            updateView(newGame.getData());
+            waiting = false;
+          }, err => {
+            console.error(err);
+          });
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>

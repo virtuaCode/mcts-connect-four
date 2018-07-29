@@ -1,0 +1,17 @@
+{
+  "name": "connect-four",
+  "version": "1.0.0",
+  "description": "Connect Four Game",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./bin/main.js",
+    "build": "tsc -p tsconfig.json",
+    "build-start": "npm run build && npm start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Michael",
+  "license": "MIT",
+  "dependencies": {
+    "typescript": "^2.9.2"
+  }
+}
