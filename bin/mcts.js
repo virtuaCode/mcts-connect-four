@@ -4,27 +4,20 @@ define(["require", "exports", "./tree", "./board", "./node", "./uct"], function 
     var WIN_SCORE = 10;
     var MonteCarloTreeSearch = /** @class */ (function () {
         function MonteCarloTreeSearch() {
-            this.level = 10;
             this.opponent = 1;
         }
-        MonteCarloTreeSearch.prototype.getLevel = function () {
-            return this.level;
-        };
-        MonteCarloTreeSearch.prototype.setLevel = function (level) {
-            this.level = level;
-        };
-        MonteCarloTreeSearch.prototype.getMillisForCurrentLevel = function () {
-            return 2 * (this.level - 1) + 1;
-        };
-        MonteCarloTreeSearch.prototype.findNextMove = function (board, playerNo) {
+        MonteCarloTreeSearch.prototype.findNextMove = function (board, playerNo, level) {
+            if (level === void 0) { level = 3; }
             var start = Date.now();
-            var end = start + 60 * this.getMillisForCurrentLevel();
+            var end = start + 60 * (2 * (level - 1) + 1);
             this.opponent = playerNo === 1 ? 2 : 1;
             var tree = new tree_1.Tree();
             var rootNode = tree.getRoot();
             rootNode.getState().setBoard(board);
             rootNode.getState().setPlayerNo(this.opponent);
-            while (Date.now() < end) {
+            var iterations = 0;
+            var maxIterations = (10 * (level - 1) + 1) * 10 * level;
+            while (iterations < maxIterations) {
                 // Phase 1 - Selection
                 var promisingNode = this.selectPromisingNode(rootNode);
                 // Phase 2 - Expansion
@@ -39,6 +32,7 @@ define(["require", "exports", "./tree", "./board", "./node", "./uct"], function 
                 var playoutResult = this.simulateRandomPlayout(nodeToExplore);
                 // Phase 4 - Update
                 this.backPropogation(nodeToExplore, playoutResult);
+                iterations++;
             }
             var winnerNode = rootNode.getChildWithMaxScore();
             if (winnerNode === null) {

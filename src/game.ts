@@ -15,7 +15,7 @@ export class Game {
     this.board.insert(1, pos - 1);
   }
 
-  moveOpponent(): Promise<void> {
+  moveOpponent(level: number): Promise<void> {
     return new Promise((resolve, reject) => {
       const worker = new Worker('./js/worker.js');
       worker.onerror = (e) => {
@@ -24,7 +24,7 @@ export class Game {
       };
       worker.onmessage = (msg) => {
         if (msg.data.topic === 'ready') {
-          worker.postMessage(this.board.columns);
+          worker.postMessage({columns: this.board.columns, level});
         } else {
           console.log('set columns');
           this.board.columns = msg.data;

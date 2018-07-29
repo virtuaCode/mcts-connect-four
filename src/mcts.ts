@@ -6,26 +6,14 @@ import { findBestNodeWithUCT } from './uct';
 const WIN_SCORE = 10;
 
 export class MonteCarloTreeSearch {
-  private level = 10;
   private opponent: 1 | 2 = 1;
 
   constructor() { }
 
-  getLevel() {
-    return this.level;
-  }
 
-  setLevel(level: number) {
-    this.level = level;
-  }
-
-  getMillisForCurrentLevel() {
-    return 2 * (this.level - 1) + 1;
-  }
-
-  findNextMove(board: Board, playerNo: 1 | 2) {
+  findNextMove(board: Board, playerNo: 1 | 2, level = 3) {
     const start = Date.now();
-    const end = start + 60 * this.getMillisForCurrentLevel();
+    const end = start + 60 * (2 * (level - 1) + 1);
 
     this.opponent = playerNo === 1 ? 2 : 1;
 
@@ -35,7 +23,10 @@ export class MonteCarloTreeSearch {
     rootNode.getState().setBoard(board);
     rootNode.getState().setPlayerNo(this.opponent);
 
-    while (Date.now() < end) {
+    let iterations = 0;
+    const maxIterations = (10 * (level - 1) + 1) * 10 * level;
+
+    while (iterations < maxIterations) {
       // Phase 1 - Selection
       const promisingNode = this.selectPromisingNode(rootNode);
 
@@ -54,6 +45,8 @@ export class MonteCarloTreeSearch {
       const playoutResult = this.simulateRandomPlayout(nodeToExplore);
       // Phase 4 - Update
       this.backPropogation(nodeToExplore, playoutResult);
+
+      iterations++;
     }
 
     const winnerNode = rootNode.getChildWithMaxScore();

@@ -12,7 +12,7 @@ define(["require", "exports", "./board", "./mcts"], function (require, exports, 
         Game.prototype.move = function (pos) {
             this.board.insert(1, pos - 1);
         };
-        Game.prototype.moveOpponent = function () {
+        Game.prototype.moveOpponent = function (level) {
             var _this = this;
             return new Promise(function (resolve, reject) {
                 var worker = new Worker('./js/worker.js');
@@ -22,7 +22,7 @@ define(["require", "exports", "./board", "./mcts"], function (require, exports, 
                 };
                 worker.onmessage = function (msg) {
                     if (msg.data.topic === 'ready') {
-                        worker.postMessage(_this.board.columns);
+                        worker.postMessage({ columns: _this.board.columns, level: level });
                     }
                     else {
                         console.log('set columns');

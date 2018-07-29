@@ -33,6 +33,7 @@
       border: 1px solid black;
       border-radius: 25px;
       margin: 4px;
+      box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.2) inset;
     }
 
     .row.player {
@@ -102,36 +103,95 @@
     <div class="row"></div>
     <div class="row"></div>
   </div>
+  <div class="side">
+    <form id="level">
+      <fieldset>
+        <legend>AI Level</legend>
+        <div>
+          <input type="radio" id="level1" value="1" name="level" />
+          <label for="level1">1</label>
+        </div>
+        <div>
+          <input type="radio" id="level2" value="2" name="level" />
+          <label for="level2">2</label>
+        </div>
+        <div>
+          <input type="radio" id="level3" value="3" name="level" />
+          <label for="level3">3</label>
+        </div>
+        <div>
+          <input type="radio" id="level4" value="4" name="level" />
+          <label for="level4">4</label>
+        </div>
+        <div>
+          <input type="radio" id="level5" value="5" name="level" checked/>
+          <label for="level5">5</label>
+        </div>
+        <div>
+          <input type="radio" id="level6" value="6" name="level" />
+          <label for="level6">6</label>
+        </div>
+        <div>
+          <input type="radio" id="level7" value="7" name="level" />
+          <label for="level7">7</label>
+        </div>
+        <div>
+          <input type="radio" id="level8" value="8" name="level" />
+          <label for="level8">8</label>
+        </div>
+        <div>
+          <input type="radio" id="level9" value="9" name="level" />
+          <label for="level9">9</label>
+        </div>
+        <div>
+          <input type="radio" id="level10" value="10" name="level" />
+          <label for="level10">10</label>
+        </div>
+      </fieldset>
+    </form>
+  </div>
   <script>
     requirejs(["bin/game"], function (game) {
-      console.log(game);
       const newGame = new game.Game();
-      console.log(newGame.getData());
+      let level = 5;
 
       function updateView(data) {
         const columns = document.body.querySelectorAll('.col');
-        
+
         for (let x = 0; x < data.length; x++) {
           const colData = data[x];
           const col = columns.item(x);
-          for(let y = 0; y < colData.length; y++) {
+          for (let y = 0; y < colData.length; y++) {
             const player = colData[y];
             col.children.item(colData.length - y - 1).className = 'row' + (player === 0 ? '' : player === 1 ? ' player' : ' opponent')
           }
         }
       }
 
+      var radios = document.forms["level"].elements["level"];
+      const levelStored = localStorage.getItem('level') || '5';
+      for (let i = 0, max = radios.length; i < max; i++) {
+        radios[i].onclick = function () {
+          localStorage.setItem('level', String(i + 1));
+          level = Number(this.value);
+        }
+
+        if (i === Number(levelStored) - 1) {
+          radios[i].click();
+        }
+      }
+
       const cols = document.body.querySelectorAll('.col');
-      
+
       let waiting = false;
 
-      for(let i = 0; i < cols.length; i++) {
+      for (let i = 0; i < cols.length; i++) {
         cols[i].addEventListener('click', () => {
           if (newGame.hasEnded() || waiting) return;
           newGame.move(i + 1);
           waiting = true;
           updateView(newGame.getData());
-          newGame.moveOpponent().then(() => {
+          newGame.moveOpponent(level).then(() => {
             updateView(newGame.getData());
             waiting = false;
           }, err => {
