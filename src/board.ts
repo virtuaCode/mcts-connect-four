@@ -77,6 +77,10 @@ export class Board {
 
   status(): -1 | 0 | 1 | 2 {
     function checkLine(a: Player, b: Player, c: Player, d: Player) {
+      for (const para of [a, b, c, d]) {
+        if (para === undefined) throw new Error('Parameter is undefined');
+      }
+
       return ((a != 0) && (a == b) && (a == c) && (a == d));
     }
 
@@ -117,17 +121,31 @@ export class Board {
       }
     }
 
-    // Check down-right
-    for (let y = 0; y < WIDTH - 3; y++)
-      for (let x = 0; x < HEIGHT - 3; x++)
+    for (let x = 0; x < 4; x++) {
+      for (let y = 0; y < 3; y++) {
         if (checkLine(this.columns[x][y], this.columns[x + 1][y + 1], this.columns[x + 2][y + 2], this.columns[x + 3][y + 3]))
           return this.columns[x][y];
+      }
+    }
 
-    // Check down-left
-    for (let x = 3; x < 7; x++)
-      for (let y = 0; y < 3; y++)
-        if (checkLine(this.columns[x][y], this.columns[x - 1][y + 1], this.columns[x - 2][y + 2], this.columns[x - 3][y + 3]))
+    for (let x = 0; x < 4; x++) {
+      for (let y = 5; y > 2; y--) {
+        if (checkLine(this.columns[x][y], this.columns[x + 1][y - 1], this.columns[x + 2][y - 2], this.columns[x + 3][y - 3]))
           return this.columns[x][y];
+      }
+    }
+
+    // // Check down-right
+    // for (let y = 0; y < WIDTH - 3; y++)
+    //   for (let x = 0; x < HEIGHT - 3; x++)
+    //     if (checkLine(this.columns[x][y], this.columns[x + 1][y + 1], this.columns[x + 2][y + 2], this.columns[x + 3][y + 3]))
+    //       return this.columns[x][y];
+
+    // // Check down-left
+    // for (let x = 3; x < 7; x++)
+    //   for (let y = 0; y < 3; y++)
+    //     if (checkLine(this.columns[x][y], this.columns[x - 1][y + 1], this.columns[x - 2][y + 2], this.columns[x - 3][y + 3]))
+    //       return this.columns[x][y];
 
 
 

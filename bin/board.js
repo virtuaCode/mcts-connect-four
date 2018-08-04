@@ -64,6 +64,11 @@ define(["require", "exports"], function (require, exports) {
         };
         Board.prototype.status = function () {
             function checkLine(a, b, c, d) {
+                for (var _i = 0, _a = [a, b, c, d]; _i < _a.length; _i++) {
+                    var para = _a[_i];
+                    if (para === undefined)
+                        throw new Error('Parameter is undefined');
+                }
                 return ((a != 0) && (a == b) && (a == c) && (a == d));
             }
             for (var x = 0; x < exports.WIDTH; x++) {
@@ -98,16 +103,28 @@ define(["require", "exports"], function (require, exports) {
                     }
                 }
             }
-            // Check down-right
-            for (var y = 0; y < exports.WIDTH - 3; y++)
-                for (var x = 0; x < exports.HEIGHT - 3; x++)
+            for (var x = 0; x < 4; x++) {
+                for (var y = 0; y < 3; y++) {
                     if (checkLine(this.columns[x][y], this.columns[x + 1][y + 1], this.columns[x + 2][y + 2], this.columns[x + 3][y + 3]))
                         return this.columns[x][y];
-            // Check down-left
-            for (var x = 3; x < 7; x++)
-                for (var y = 0; y < 3; y++)
-                    if (checkLine(this.columns[x][y], this.columns[x - 1][y + 1], this.columns[x - 2][y + 2], this.columns[x - 3][y + 3]))
+                }
+            }
+            for (var x = 0; x < 4; x++) {
+                for (var y = 5; y > 2; y--) {
+                    if (checkLine(this.columns[x][y], this.columns[x + 1][y - 1], this.columns[x + 2][y - 2], this.columns[x + 3][y - 3]))
                         return this.columns[x][y];
+                }
+            }
+            // // Check down-right
+            // for (let y = 0; y < WIDTH - 3; y++)
+            //   for (let x = 0; x < HEIGHT - 3; x++)
+            //     if (checkLine(this.columns[x][y], this.columns[x + 1][y + 1], this.columns[x + 2][y + 2], this.columns[x + 3][y + 3]))
+            //       return this.columns[x][y];
+            // // Check down-left
+            // for (let x = 3; x < 7; x++)
+            //   for (let y = 0; y < 3; y++)
+            //     if (checkLine(this.columns[x][y], this.columns[x - 1][y + 1], this.columns[x - 2][y + 2], this.columns[x - 3][y + 3]))
+            //       return this.columns[x][y];
             var hasEmpty = this.columns.some(function (col) { return col.some(function (row) { return row === 0; }); });
             if (!hasEmpty)
                 return 0;
